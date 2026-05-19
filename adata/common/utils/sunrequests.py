@@ -27,18 +27,11 @@ class SunProxy(object):
                 if not hasattr(SunProxy, "_instance"):
                     SunProxy._instance = object.__new__(cls)
 
-    @classmethod
-    def set(cls, key, value):
-        cls._data[key] = value
 
     @classmethod
     def get(cls, key):
         return cls._data.get(key)
 
-    @classmethod
-    def delete(cls, key):
-        if key in cls._data:
-            del cls._data[key]
 
 
 class SunRequests(object):

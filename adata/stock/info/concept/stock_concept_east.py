@@ -65,21 +65,7 @@ class StockConceptEast(StockConceptTemplate):
         :param concept_code: 概念代码，BK开头
         :return: 概念的成分股
         """
-        curr_page = 1
-        data = []
-        while curr_page < 100:
-            url = f"https://push2.eastmoney.com/api/qt/clist/get" \
-                  f"?fid=f62&po=1&pz=200&pn={curr_page}&np=1&fltt=2&invt=2&fs=b:{concept_code}&fields=f12,f14"
-            res_json = requests.request('get', url, headers={}, proxies={}, wait_time=wait_time).json()
-            res_data = res_json['data']
-            if not res_data:
-                break
-            res_data = res_data['diff']
-            for _ in res_data:
-                data.append({'stock_code': _['f12'], 'short_name': _['f14']})
-            curr_page += 1
-        result_df = pd.DataFrame(data=data, columns=self._CONCEPT_CONSTITUENT_COLUMNS)
-        return result_df
+        pass
 
     def get_concept_east(self, stock_code: str = '000001'):
         """
@@ -93,28 +79,7 @@ class StockConceptEast(StockConceptTemplate):
         :param stock_code: 股票代码
         :return: 概念信息
         """
-        stock_code = compile_exchange_by_stock_code(stock_code)
-        url = f"https://datacenter.eastmoney.com/securities/api/data/v1/get?" \
-              f"reportName=RPT_F10_CORETHEME_BOARDTYPE&" \
-              f"columns=SECUCODE%2CSECURITY_CODE%2CSECURITY_NAME_ABBR%2CNEW_BOARD_CODE%2CBOARD_NAME%2CSELECTED_BOARD_REASON%2CIS_PRECISE%2CBOARD_RANK%2CBOARD_YIELD%2CDERIVE_BOARD_CODE&" \
-              f"quoteColumns=f3~05~NEW_BOARD_CODE~BOARD_YIELD&" \
-              f"filter=(SECUCODE%3D%22{stock_code}%22)(IS_PRECISE%3D%221%22)&pageNumber=1&pageSize=50&sortTypes=1&" \
-              f"sortColumns=BOARD_RANK&source=HSF10&client=PC"
-        res_json = requests.request('get', url, headers={}, proxies={}).json()
-        # 1. 返回结果判断
-        if not res_json['success']:
-            return pd.DataFrame(data=[], columns=self._CONCEPT_INFO_COLUMNS)
-
-        # 2. 正常返回数据结果封装
-        res_data = res_json['result']['data']
-        data = []
-        for _ in res_data:
-            # ['stock_code', 'short_name', 'concept_code', 'name', 'reason', 'source']
-            data.append({'stock_code': _['SECURITY_CODE'], 'concept_code': _['NEW_BOARD_CODE'],
-                         'name': _['BOARD_NAME'],
-                         'reason': _['SELECTED_BOARD_REASON'], 'source': '东方财富'})
-        result_df = pd.DataFrame(data=data, columns=self._CONCEPT_INFO_COLUMNS)
-        return result_df
+        pass
 
     def get_plate_east(self, stock_code: str = '000001', plate_type=None):
         """
@@ -123,29 +88,7 @@ class StockConceptEast(StockConceptTemplate):
         :param plate_type: 1. 行业 2. 地域板块 3.概念 默认：0全部
         :return: 板块信息
         """
-        stock_code = compile_exchange_by_stock_code(stock_code)
-        url = f'https://datacenter.eastmoney.com/securities/api/data/get?' \
-              f'type=RPT_F10_CORETHEME_BOARDTYPE&' \
-              f'sty=SECUCODE,SECURITY_CODE,SECURITY_NAME_ABBR,BOARD_CODE,BOARD_NAME,IS_PRECISE,BOARD_RANK,BOARD_TYPE&' \
-              f'filter=(SECUCODE="{stock_code}")&p=1&ps=&sr=1&st=BOARD_RANK&source=HSF10&client=PC&v=08059745171648254'
-        res_json = requests.request('get', url, headers={}, proxies={}).json()
-        # 1. 返回结果判断
-        if not res_json['success']:
-            return pd.DataFrame(data=[], columns=self._PLATE_INFO_COLUMNS)
-
-        # 2. 正常返回数据结果封装
-        res_data = res_json['result']['data']
-        data = []
-        for _ in res_data:
-            plate_code = '0000' + _['BOARD_CODE']
-            data.append({'stock_code': _['SECURITY_CODE'], 'plate_code': 'BK' + plate_code[-4:],
-                         'plate_name': _['BOARD_NAME'], 'source': '东方财富',
-                         'plate_type': _['BOARD_TYPE'] if _['BOARD_TYPE'] else '概念'})
-        result_df = pd.DataFrame(data=data, columns=self._PLATE_INFO_COLUMNS)
-        if plate_type is None:
-            return result_df
-        plate_type = {'1': '行业', '2': '板块', '3': '概念'}.get(str(plate_type), None)
-        return result_df[result_df['plate_type'] == plate_type]
+        pass
 
 
 if __name__ == '__main__':

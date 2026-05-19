@@ -43,64 +43,21 @@ class StockConceptThs(StockConceptTemplate):
         这两个不要混淆啦，同花顺的网站获取数据需要用到这两个代码
         :return: 概念[[name,index_code，concept_code]]
         """
-        index_df = self.__concept_index_code_ths()
-        code_df = self.__concept_code_ths()
-        result_df_l = pd.merge(index_df, code_df, how='left', on='name')
-        result_df_r = pd.merge(index_df, code_df, how='right', on='name')
-        result_df = pd.concat([result_df_l, result_df_r]).drop_duplicates(keep='first', inplace=False,
-                                                                          ignore_index=True)
-
-        index_df.drop(index_df.index, inplace=True)
-        code_df.drop(code_df.index, inplace=True)
-        result_df_l.drop(result_df_l.index, inplace=True)
-        result_df_r.drop(result_df_r.index, inplace=True)
-        result_df['source'] = '同花顺'
-        return result_df
+        pass
 
     def __concept_code_ths(self):
         """
         获取同花顺的所有概念和概念代码,暂时废弃
         web: http://q.10jqka.com.cn/gn/
         """
-        # 1. 请求接口 url
-        api_url = f"http://q.10jqka.com.cn/gn/"
-        for i in range(3):
-            res = requests.request('get', api_url, headers=ths_headers.text_headers, proxies={})
-            # 2. 判断请求是否正确
-            text = res.text
-            if res.status_code != 200 or len(text) < 1:
-                continue
-            # 3. 解析数据
-            soup = BeautifulSoup(text, 'html.parser')
-            data = []
-            for a in soup.find_all('a'):
-                href = str(a['href'])
-                if href.startswith(api_url + 'detail/code/'):
-                    data.append([href[-7: -1], a.string, href])
-
-            # 4. 封装数据
-            data_df = pd.DataFrame(data=data, columns=['concept_code', 'name', 'href'])[['concept_code', 'name']]
-            return data_df
+        pass
 
     def __concept_index_code_ths(self):
         """
         获取app的概率列表，通过问财询问得到结果
         :return: app的概念列表： concept_code，name
         """
-        data = []
-        for i in range(1, 10):
-            api_url = f"http://search.10jqka.com.cn/gateway/urp/v7/landing/getDataList?perpage=100&page={i}&query=%E6%89%80%E6%9C%89%E6%A6%82%E5%BF%B5&condition=%5B%7B%22indexName%22%3A%22%E6%8C%87%E6%95%B0%40%E5%90%8C%E8%8A%B1%E9%A1%BA%E6%A6%82%E5%BF%B5%E6%8C%87%E6%95%B0%22%2C%22indexProperties%22%3A%5B%5D%2C%22source%22%3A%22new_parser%22%2C%22type%22%3A%22index%22%2C%22indexPropertiesMap%22%3A%7B%7D%2C%22reportType%22%3A%22null%22%2C%22chunkedResult%22%3A%22%E6%89%80%E6%9C%89%E6%A6%82%E5%BF%B5%22%2C%22valueType%22%3A%22_%E6%8C%87%E6%95%B0%E7%B1%BB%E5%9E%8B%22%2C%22domain%22%3A%22abs_a%E6%8C%87%E9%A2%86%E5%9F%9F%22%2C%22uiText%22%3A%22%E5%90%8C%E8%8A%B1%E9%A1%BA%E6%A6%82%E5%BF%B5%E6%8C%87%E6%95%B0%22%2C%22sonSize%22%3A0%2C%22queryText%22%3A%22%E5%90%8C%E8%8A%B1%E9%A1%BA%E6%A6%82%E5%BF%B5%E6%8C%87%E6%95%B0%22%2C%22relatedSize%22%3A0%7D%5D&urp_sort_index=%E6%8C%87%E6%95%B0%E4%BB%A3%E7%A0%81&source=Ths_iwencai_Xuangu&urp_sort_way=desc&codelist=&page_id=&logid=35df00ee5ae706d0dfcd0dbfdb846e0c&ret=json_all&sessionid=35df00ee5ae706d0dfcd0dbfdb846e0c&iwc_token=0ac9667016801698001765831&user_id=Ths_iwencai_Xuangu_7fahywzhbkrh4lwwkwfw936njqbjzsly&uuids%5B0%5D=23119&query_type=zhishu&comp_id=6367801&business_cat=soniu&uuid=23119"
-            res = requests.request('get', url=api_url, headers=ths_headers.c_headers)
-            res_json = res.json()
-            if res_json['status_msg'] == 'ok':
-                data_list = res_json['answer']['components'][0]['data']['datas']
-                if len(data_list) < 1:
-                    break
-                for d in data_list:
-                    data.append([d['code'], d['指数简称']])
-        data_df = pd.DataFrame(data=data, columns=['index_code', 'name']).drop_duplicates(keep='first', inplace=False,
-                                                                                          ignore_index=True)
-        return data_df
+        pass
 
     def concept_constituent_ths(self, concept_code=None, name=None, index_code=None, wait_time=None):
         """
@@ -275,24 +232,7 @@ class StockConceptThs(StockConceptTemplate):
         :param stock_code: 股票代码
         :return: 概念信息
         """
-        url = f"https://basic.10jqka.com.cn/{stock_code}/concept.html"
-        headers = ths_headers.text_headers
-        headers['Host'] = 'basic.10jqka.com.cn'
-        res = requests.request('get', url, headers=headers, proxies={})
-        # 3. 解析数据
-        text = res.content.decode('gbk')
-        soup = BeautifulSoup(text, 'html.parser')
-        table = soup.find('table', attrs={'class': 'gnContent'})
-        trs = table.tbody.find_all('tr')
-        data = []
-        for i in range(0, len(trs), 2):
-            columns = trs[i].find_all('td')
-            data.append({'stock_code': stock_code, 'concept_code': columns[1].get('clid'),
-                         'name': columns[1].text,
-                         'reason': trs[i + 1].text, 'source': '同花顺'})
-        result_df = pd.DataFrame(data=data, columns=self._CONCEPT_INFO_COLUMNS)
-        result_df.replace(to_replace=[r'\t', r'\n', ' '], value='', regex=True, inplace=True)
-        return result_df
+        pass
 
 
 if __name__ == '__main__':

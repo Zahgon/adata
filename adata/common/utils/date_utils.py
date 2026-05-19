@@ -15,12 +15,7 @@ def get_n_days_date(days=0, fmt="%Y-%m-%d"):
     :param fmt: 日期格式；默认：%Y-%m-%d
     :return: 对应的日期
     """
-    # 获取当前日期
-    current_date = datetime.now().date()
-    # 计算前N天的日期
-    target_date = current_date + timedelta(days=days)
-    # 将日期格式化为指定格式
-    return target_date.strftime(fmt)
+    pass
 
 
 def get_cur_time(fmt="%Y-%m-%d %H:%M:%S"):

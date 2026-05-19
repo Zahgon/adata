@@ -41,52 +41,7 @@ class FundInfo(BaseThs):
         """
         http://www.iwencai.com/customized/chart/get-robot-data
         """
-        wc_url = 'http://www.iwencai.com/customized/chart/get-robot-data'
-        # 1. url拼接页码等参数
-        data = []
-        total_pages = 1
-        curr_page = 1
-        while curr_page <= total_pages:
-            params = {'source': "Ths_iwencai_Xuangu", 'version': '2.0', 'query_area': '', 'block_list': '',
-                      'add_info': '{\"urp\":{\"scene\":1,\"company\":1,\"business\":1},\"contentType\":\"json\",\"searchInfo\":true}',
-                      'question': '基金市场类型包含ETF(场内)', 'perpage': 100, 'page': curr_page, 'secondary_intent': 'fund',
-                      'log_info': '{\"input_type\":\"typewrite\"}',
-                      'rsh': 'Ths_iwencai_Xuangu_kn63wc5it6hwdapiye6hplx8h86di15p'}
-
-            headers = {'Host': 'www.iwencai.com', 'Content-Type': 'application/json',
-                       'Origin': 'http://www.iwencai.com',
-                       'Accept': 'application/json, text/plain, */*', 'hexin-v': self.wencai_hexin_v()}
-            res = requests.request(method='post', url=wc_url, headers=headers, data=json.dumps(params),
-                                   wait_time=wait_time)
-            curr_page += 1
-            # 2. 判断请求是否成功
-            if res.status_code != 200:
-                continue
-            text = res.text.encode('utf-8').decode('unicode escape')
-            if THS_IP_LIMIT_RES in text:
-                return Exception(THS_IP_LIMIT_MSG)
-            if 'ETF(场内)' not in text:
-                break
-            res_json = res.json()
-            data_dic = res_json['answer']['components'][0]['data']
-            # 3 .获取总的页数
-            if total_pages == 1:
-                total_pages = math.ceil(data_dic['meta']['extra']['code_count'] / 100)
-            # 4. 解析数据
-            page_data = []
-            data_list = data_dic['datas']
-            for one in data_list:
-                if 'ETF(场内)' in one['基金@基金市场类型']:
-                    page_data.append({'fund_code': one['code'], 'short_name': one['基金简称'],
-                                      'net_value': one['基金@最新单位净值'], 'net_date': one['基金@最新净值日期'],
-                                      'exchange': one['基金代码'].split('.')[1]})
-            data.extend(page_data)
-            # 5. 封装数据
-            if not data:
-                return pd.DataFrame(data=data, columns=self.__ETF_INFO_COLUMNS)
-        result_df = pd.DataFrame(data=data, columns=self.__ETF_INFO_COLUMNS)
-        data.clear()
-        return result_df[self.__ETF_INFO_COLUMNS]
+        pass
 
     def __all_etf_exchange_traded_info_east(self, wait_time):
         """

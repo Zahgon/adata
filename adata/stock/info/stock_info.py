@@ -90,8 +90,7 @@ class StockInfo(object):
         :param stock_code: 股票代码
         :return:
         """
-        ## TODO
-        return
+        pass
 
 
 if __name__ == '__main__':

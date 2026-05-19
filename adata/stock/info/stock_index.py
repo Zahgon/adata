@@ -134,44 +134,7 @@ class StockIndex(object):
         :param index_code: 指数代码 399282
         :return:['index_code', 'stock_code', 'short_name']
         """
-        # 1. url拼接页码等参数
-        data = []
-        total_pages = 1
-        curr_page = 1
-        while curr_page <= total_pages:
-            api_url = f"http://vip.stock.finance.sina.com.cn/corp/view/vII_NewestComponent.php?" \
-                      f"page={curr_page}&indexid={index_code}"
-
-            res = requests.request(method='get', url=api_url, proxies={}, wait_time=wait_time)
-            curr_page += 1
-            # 2. 判断请求是否成功
-            if res.status_code != 200:
-                continue
-            text = res.text
-            if 'NewStockTable' not in text or '最新成分' not in text:
-                break
-            soup = BeautifulSoup(text, 'html.parser')
-            # 3 .获取总的页数
-            if total_pages == 1:
-                page_info = soup.find('table', {'class': 'table2'}).text
-                if page_info and '共' in page_info and '页' in page_info:
-                    # Extract the total number of pages from the page_info string
-                    total_pages = int(page_info.split('共')[1].split('页')[0])
-            # 4. 解析数据
-            page_data = []
-            table = soup.find('table', {'id': 'NewStockTable'})
-            for row in table.find_all('tr')[2:]:
-                cells = row.find_all('td')
-                if len(cells) == 3:
-                    page_data.append({'index_code': index_code, 'stock_code': cells[0].div.text.strip(),
-                                      'short_name': cells[1].div.text.strip()})
-            data.extend(page_data)
-        # 5. 封装数据
-        if not data:
-            return pd.DataFrame(data=data, columns=self.__INDEX_CONSTITUENT_COLUMN)
-        result_df = pd.DataFrame(data=data)
-        data.clear()
-        return result_df[self.__INDEX_CONSTITUENT_COLUMN]
+        pass
 
 
 if __name__ == '__main__':

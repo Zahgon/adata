@@ -65,41 +65,20 @@ class _IdWorker(object):
         生成整数时间戳
         :return:int timestamp
         """
-        return int(time.time() * 1000)
+        pass
 
     def _til_next_millis(self, last_timestamp):
         """
         等到下一毫秒
         """
-        timestamp = self._gen_timestamp()
-        while timestamp <= last_timestamp:
-            timestamp = self._gen_timestamp()
-        return timestamp
+        pass
 
     def id(self):
         """
         获取新ID
         :return:
         """
-        timestamp = self._gen_timestamp()
-
-        # 时钟回拨
-        if timestamp < self.last_timestamp:
-            logging.error('clock is moving backwards. Rejecting requests until {}'.format(self.last_timestamp))
-            raise
-
-        if timestamp == self.last_timestamp:
-            self.sequence = (self.sequence + 1) & SEQUENCE_MASK
-            if self.sequence == 0:
-                timestamp = self._til_next_millis(self.last_timestamp)
-        else:
-            self.sequence = 0
-
-        self.last_timestamp = timestamp
-
-        new_id = ((timestamp - TWEPOCH) << TIMESTAMP_LEFT_SHIFT) | (self.datacenter_id << DATACENTER_ID_SHIFT) | \
-                 (self.worker_id << WORKER_ID_SHIFT) | self.sequence
-        return new_id
+        pass
 
 
 # 随机分配机器id 和 数据中心
